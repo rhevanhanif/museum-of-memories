@@ -8,6 +8,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <script>
+  if (location.pathname && !location.pathname.endsWith('/') && !location.pathname.endsWith('.html')) {
+    location.replace(location.pathname + '/' + location.search + location.hash);
+  }
+  </script>
 </head>
 <body>
 
@@ -75,6 +80,14 @@
 
     <div id="interact-hint" class="hidden">
       <span id="interact-hint-text">Klik untuk melihat</span>
+    </div>
+
+    <div id="rotate-hint" class="hidden">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+        <path d="M12 18h.01"/>
+      </svg>
+      <span>Putar HP ke Landscape untuk visual terbaik</span>
     </div>
   </div>
 

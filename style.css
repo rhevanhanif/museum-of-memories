@@ -565,3 +565,35 @@ img { display: block; }
   #joystick-base { left: 36px; bottom: 42px; width: 100px; height: 100px; }
   #joystick-thumb { width: 38px; height: 38px; }
 }
+
+#rotate-hint {
+  position: fixed;
+  top: 75px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  background: var(--col-glass-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--col-glass-border);
+  border-radius: 28px;
+  color: var(--col-warm);
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  pointer-events: auto;
+  cursor: pointer;
+  white-space: nowrap;
+  animation: hintPulse 2.2s ease-in-out infinite;
+}
+
+@media (orientation: landscape) {
+  #rotate-hint { display: none !important; }
+}
+
+@media (min-width: 900px) {
+  #rotate-hint { display: none !important; }
+}

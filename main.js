@@ -78,6 +78,7 @@ var $mobileCtrl = document.getElementById('mobile-controls');
 var $btnMute = document.getElementById('btn-mute');
 var $iconMuted = document.getElementById('icon-muted');
 var $iconUnmuted = document.getElementById('icon-unmuted');
+var $rotateHint = document.getElementById('rotate-hint');
 var $qjButtons = document.querySelectorAll('.qj-btn');
 
 var textureLoader = new THREE.TextureLoader();
@@ -342,7 +343,8 @@ function initEngine() {
   scene.background = new THREE.Color(0x11100f);
   scene.fog = new THREE.Fog(0x11100f, 6, 56);
 
-  camera = new THREE.PerspectiveCamera(62, window.innerWidth / window.innerHeight, 0.1, 220);
+  var initialAspect = window.innerWidth / window.innerHeight;
+  camera = new THREE.PerspectiveCamera(initialAspect < 1.0 ? 80 : 62, initialAspect, 0.1, 220);
   camera.position.set(0, PLAYER_HEIGHT, 0);
 
   renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
@@ -380,10 +382,15 @@ function initEngine() {
   }
 
   window.addEventListener('resize', function () {
-    camera.aspect = window.innerWidth / window.innerHeight;
+    var aspect = window.innerWidth / window.innerHeight;
+    camera.aspect = aspect;
+    camera.fov = aspect < 1.0 ? 80 : 62;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, MAX_DPR));
+    if ($rotateHint && aspect >= 1.0) {
+      $rotateHint.classList.add('hidden');
+    }
   });
 }
 
@@ -953,6 +960,19 @@ function buildGreyParticles(endZ) {
   scene.add(greyParticlesObj);
 }
 
+function loadTextureSafe(url, onSuccess, onError) {
+  textureLoader.load(url, onSuccess, undefined, function () {
+    if (url.indexOf('assets/') !== -1) {
+      var altUrl = url.replace('assets/', '');
+      textureLoader.load(altUrl, onSuccess, undefined, function () {
+        if (onError) onError();
+      });
+    } else {
+      if (onError) onError();
+    }
+  });
+}
+
 function updateTexturesByDistance(playerZ, time) {
   if (time - lastTexCheck < TEX_CHECK_MS) return;
   lastTexCheck = time;
@@ -966,7 +986,7 @@ function updateTexturesByDistance(playerZ, time) {
     if (dist < LOAD_DIST && !entry.textureLoaded) {
       entry.textureLoaded = true;
       (function (e) {
-        textureLoader.load(e.item.imageUrl, function (tex) {
+        loadTextureSafe(e.item.imageUrl, function (tex) {
           tex.generateMipmaps = false;
           tex.minFilter = THREE.LinearFilter;
           tex.magFilter = THREE.LinearFilter;
@@ -977,7 +997,7 @@ function updateTexturesByDistance(playerZ, time) {
           } else {
             tex.dispose();
           }
-        }, undefined, function () {
+        }, function () {
           e.textureLoaded = false;
         });
       })(entry);
@@ -1005,7 +1025,7 @@ function preloadInitialTextures() {
     var loaded = 0;
     var total = toLoad.length;
     toLoad.forEach(function (entry) {
-      textureLoader.load(entry.item.imageUrl, function (tex) {
+      loadTextureSafe(entry.item.imageUrl, function (tex) {
         tex.generateMipmaps = false;
         tex.minFilter = THREE.LinearFilter;
         tex.magFilter = THREE.LinearFilter;
@@ -1018,7 +1038,7 @@ function preloadInitialTextures() {
         $loadBar.style.width = pct + '%';
         $loadPercent.textContent = pct + '%';
         if (loaded >= total) resolve();
-      }, undefined, function () {
+      }, function () {
         loaded++;
         if (loaded >= total) resolve();
       });
@@ -1208,6 +1228,11 @@ function handleInteraction(tapVec) {
 
 function openLightbox(item) {
   isModalOpen = true;
+  $lightboxImg.onerror = function () {
+    if (this.src && this.src.indexOf('assets/') !== -1) {
+      this.src = this.src.replace('assets/', '');
+    }
+  };
   $lightboxImg.src = item.imageUrl;
   $lightbox.classList.remove('hidden');
   if (!isMobile && controls) controls.unlock();
@@ -1530,9 +1555,18 @@ async function main() {
       controls.lock();
     } else {
       $hud.classList.remove('hidden');
+      if (window.innerWidth < window.innerHeight && $rotateHint) {
+        $rotateHint.classList.remove('hidden');
+      }
     }
     initBGM();
   });
+
+  if ($rotateHint) {
+    $rotateHint.addEventListener('click', function () {
+      $rotateHint.classList.add('hidden');
+    });
+  }
 
   animate();
 }
