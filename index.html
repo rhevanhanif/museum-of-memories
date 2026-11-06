@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Museum of Memories</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <div id="loading-screen">
+    <div class="loading-inner">
+      <div class="loading-logo">
+        <svg viewBox="0 0 60 60" width="60" height="60" fill="none" stroke="rgba(255,225,180,0.7)" stroke-width="1.2">
+          <rect x="6" y="10" width="48" height="40" rx="2"/>
+          <rect x="12" y="16" width="36" height="28" rx="1"/>
+          <line x1="30" y1="6" x2="30" y2="10"/>
+          <circle cx="30" cy="5" r="2"/>
+        </svg>
+      </div>
+      <h1 class="loading-title">Museum of Memories</h1>
+      <div class="loading-bar-track">
+        <div class="loading-bar-fill" id="loading-bar-fill"></div>
+      </div>
+      <p class="loading-percent" id="loading-percent">0%</p>
+    </div>
+  </div>
+
+  <div id="start-screen" class="hidden">
+    <div class="start-inner">
+      <h1 class="start-title">Museum of Memories</h1>
+      <button id="btn-enter" class="btn-enter">
+        <span>Masuk ke Museum</span>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+      <p class="start-hint" id="start-hint-desktop">WASD untuk berjalan · Mouse untuk menoleh · Klik foto untuk melihat</p>
+      <p class="start-hint" id="start-hint-mobile">Joystick kiri untuk berjalan · Sentuh kanan untuk menoleh · Tap foto untuk melihat</p>
+    </div>
+  </div>
+
+  <div id="hud" class="hidden">
+    <div id="crosshair">
+      <div class="crosshair-dot"></div>
+      <div class="crosshair-ring"></div>
+    </div>
+
+    <div id="quick-jump">
+      <button class="qj-btn" data-target="start">
+        <span class="qj-dot"></span><span class="qj-label">Awal</span>
+      </button>
+      <button class="qj-btn" data-target="part1">
+        <span class="qj-dot"></span><span class="qj-label">Bagian I</span>
+      </button>
+      <button class="qj-btn" data-target="part2">
+        <span class="qj-dot"></span><span class="qj-label">Bagian II</span>
+      </button>
+      <button class="qj-btn" data-target="end">
+        <span class="qj-dot"></span><span class="qj-label">Ujung Lorong</span>
+      </button>
+    </div>
+
+    <button id="btn-mute">
+      <svg id="icon-unmuted" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+      </svg>
+      <svg id="icon-muted" class="hidden" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+        <line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>
+      </svg>
+    </button>
+
+    <div id="interact-hint" class="hidden">
+      <span id="interact-hint-text">Klik untuk melihat</span>
+    </div>
+  </div>
+
+  <div id="mobile-controls" class="hidden">
+    <div id="joystick-zone">
+      <div id="joystick-base">
+        <div id="joystick-thumb"></div>
+      </div>
+    </div>
+    <div id="touch-look-zone"></div>
+  </div>
+
+  <div id="lightbox" class="hidden">
+    <div class="lightbox-backdrop"></div>
+    <div class="lightbox-content">
+      <img id="lightbox-img" src="" alt="Memory" />
+    </div>
+    <button id="lightbox-close" aria-label="Tutup">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+
+  <div id="text-modal" class="hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-card">
+      <div class="modal-body">
+        <h2 id="modal-title"></h2>
+        <p id="modal-subtitle"></p>
+        <p id="modal-text"></p>
+      </div>
+      <button id="modal-close" aria-label="Tutup">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="canvas-container"></div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="main.js"></script>
+</body>
+</html>
